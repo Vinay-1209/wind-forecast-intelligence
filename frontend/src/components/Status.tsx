@@ -1,3 +1,5 @@
+import { Component, type ReactNode } from "react"
+
 export function WindMark() {
   return (
     <svg className="wind-mark" viewBox="0 0 64 40" aria-hidden="true">
@@ -6,6 +8,61 @@ export function WindMark() {
       <path d="M2 10c8-2 12-7 18-7s8 5 14 4" />
     </svg>
   )
+}
+
+export interface ToastNotice {
+  key: string
+  message: string
+  onRetry?: () => void
+}
+
+export function Toaster({
+  notices,
+  onDismiss,
+}: {
+  notices: ToastNotice[]
+  onDismiss: (key: string) => void
+}) {
+  if (notices.length === 0) return null
+  return (
+    <div className="toaster">
+      {notices.map((notice) => (
+        <div key={notice.key} className="toast" role="alert">
+          <p>{notice.message}</p>
+          <div className="toast-actions">
+            {notice.onRetry ? (
+              <button type="button" className="button primary" onClick={notice.onRetry}>
+                Try again
+              </button>
+            ) : null}
+            <button type="button" className="button" onClick={() => onDismiss(notice.key)}>
+              Dismiss
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export class ChartBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false }
+
+  static getDerivedStateFromError(): { failed: boolean } {
+    return { failed: true }
+  }
+
+  render() {
+    if (this.state.failed) {
+      return (
+        <ErrorState
+          message="The charts could not be shown."
+          onRetry={() => this.setState({ failed: false })}
+        />
+      )
+    }
+    return this.props.children
+  }
 }
 
 export function LoadingState() {

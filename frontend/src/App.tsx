@@ -5,7 +5,16 @@ import { DateFilter } from "./components/DateFilter.tsx"
 import { IntervalAudit } from "./components/IntervalAudit.tsx"
 import { MetricCards } from "./components/MetricCards.tsx"
 import { Methodology } from "./components/Methodology.tsx"
-import { ChartFallback, EmptyState, ErrorState, LoadingState, WindMark } from "./components/Status.tsx"
+import {
+  ChartBoundary,
+  ChartFallback,
+  EmptyState,
+  ErrorState,
+  LoadingState,
+  Toaster,
+  WindMark,
+  type ToastNotice,
+} from "./components/Status.tsx"
 import { formatDay } from "./format.ts"
 import { STUDY_FROM, STUDY_TO } from "./study.ts"
 
@@ -42,6 +51,7 @@ export default function App() {
   const [detailError, setDetailError] = useState<string | null>(null)
   const [startedKey, setStartedKey] = useState<string | null>(null)
   const [detailFor, setDetailFor] = useState<string | null>(null)
+  const [dismissed, setDismissed] = useState<string[]>([])
   const requestKey = `${from}|${to}|${attempt}`
   if (startedKey !== requestKey) {
     setStartedKey(requestKey)
@@ -110,9 +120,25 @@ export default function App() {
   }, [selectedStart])
 
   const cutoff = data?.summary.rules.cutoff_time ?? "09:50"
+  const notices: ToastNotice[] = []
+  if (status === "error" && data && error) {
+    notices.push({
+      key: `refresh:${requestKey}:${error}`,
+      message: error,
+      onRetry: () => setAttempt((value) => value + 1),
+    })
+  }
+  if (detailStatus === "error" && detailError) {
+    notices.push({
+      key: `interval:${selectedStart}:${detailError}`,
+      message: detailError,
+    })
+  }
+  const visibleNotices = notices.filter((notice) => !dismissed.includes(notice.key))
 
   return (
     <div className="page">
+      <Toaster notices={visibleNotices} onDismiss={(key) => setDismissed((current) => [...current, key])} />
       <header className="masthead">
         <p className="eyebrow">UK day-ahead procurement</p>
         <h1>Wind Forecast Intelligence</h1>
@@ -154,11 +180,6 @@ export default function App() {
             onRetry={() => setAttempt((value) => value + 1)}
           />
         ) : null}
-        {status === "error" && data ? (
-          <p className="status error" role="alert">
-            {error}
-          </p>
-        ) : null}
         {data ? (
           <>
             <div className="refresh-row">
@@ -178,15 +199,17 @@ export default function App() {
               <EmptyState />
             ) : (
               <>
-                <Suspense fallback={<ChartFallback />}>
-                  <GenerationChart points={data.series.points} onSelect={setSelectedStart} />
-                  <ErrorPanel
-                    points={data.series.points}
-                    largest={data.summary.largest_absolute_errors}
-                    selectedStart={selectedStart}
-                    onSelect={setSelectedStart}
-                  />
-                </Suspense>
+                <ChartBoundary>
+                  <Suspense fallback={<ChartFallback />}>
+                    <GenerationChart points={data.series.points} onSelect={setSelectedStart} />
+                    <ErrorPanel
+                      points={data.series.points}
+                      largest={data.summary.largest_absolute_errors}
+                      selectedStart={selectedStart}
+                      onSelect={setSelectedStart}
+                    />
+                  </Suspense>
+                </ChartBoundary>
                 <IntervalAudit detail={detail} status={detailStatus} error={detailError} />
               </>
             )}

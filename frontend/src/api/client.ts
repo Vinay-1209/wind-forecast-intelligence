@@ -15,6 +15,19 @@ function endpoint(path: string): string {
   return apiUrl(path, import.meta.env.VITE_API_URL)
 }
 
+function detailText(detail: unknown): string {
+  if (typeof detail === "string") return detail
+  if (!Array.isArray(detail)) return ""
+  return detail
+    .map((item) => {
+      if (typeof item === "string") return item
+      if (item && typeof item === "object" && "msg" in item && typeof item.msg === "string") return item.msg
+      return ""
+    })
+    .filter(Boolean)
+    .join(" ")
+}
+
 async function getJson<T>(path: string): Promise<T> {
   let response: Response
   try {
@@ -25,12 +38,14 @@ async function getJson<T>(path: string): Promise<T> {
   if (!response.ok) {
     let detail = ""
     try {
-      const body = (await response.json()) as { detail?: unknown }
-      if (typeof body.detail === "string") detail = body.detail
+      detail = detailText(((await response.json()) as { detail?: unknown }).detail)
     } catch {
       detail = ""
     }
-    throw new ApiError(detail || "The analysis service returned an error.", response.status)
+    throw new ApiError(
+      detail || `The analysis service returned an error (${response.status}).`,
+      response.status,
+    )
   }
   return (await response.json()) as T
 }

@@ -106,6 +106,53 @@ describe("App", () => {
     await waitFor(() => expect(fetchMock.mock.calls.length).toBeGreaterThan(3))
   })
 
+  it("toasts a failed refresh and keeps the figures already on screen", async () => {
+    let failRefresh = false
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: RequestInfo | URL) => {
+        const url = String(input)
+        if (failRefresh && url.includes("/summary")) {
+          return jsonResponse({ detail: [{ msg: "delivery_from must be a date" }] }, 422)
+        }
+        if (url.includes("/api/analysis/summary")) return jsonResponse(summary)
+        if (url.includes("/api/analysis/timeseries")) return jsonResponse(series)
+        if (url.includes("/api/analysis/data-quality")) return jsonResponse(quality)
+        if (url.includes("/api/analysis/forecast-details")) return jsonResponse(details)
+        return jsonResponse({ detail: "missing" }, 404)
+      }),
+    )
+    render(<App />)
+    expect(await screen.findByText("1,995.6 MW")).toBeInTheDocument()
+    failRefresh = true
+    fireEvent.change(screen.getByLabelText("Delivery from"), { target: { value: "2026-01-10" } })
+    fireEvent.click(screen.getByRole("button", { name: "Apply" }))
+    const toast = await screen.findByRole("alert")
+    expect(toast).toHaveTextContent("delivery_from must be a date")
+    expect(screen.getByText("1,995.6 MW")).toBeInTheDocument()
+    fireEvent.click(screen.getByRole("button", { name: "Dismiss" }))
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument()
+  })
+
+  it("toasts when the selected interval cannot be loaded", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (input: RequestInfo | URL) => {
+        const url = String(input)
+        if (url.includes("/api/analysis/summary")) return jsonResponse(summary)
+        if (url.includes("/api/analysis/timeseries")) return jsonResponse(series)
+        if (url.includes("/api/analysis/data-quality")) return jsonResponse(quality)
+        if (url.includes("/api/analysis/forecast-details")) {
+          return jsonResponse({ detail: "start must be a 30-minute settlement interval" }, 422)
+        }
+        return jsonResponse({ detail: "missing" }, 404)
+      }),
+    )
+    render(<App />)
+    expect(await screen.findByRole("alert")).toHaveTextContent("30-minute settlement interval")
+    expect(screen.getByText("1,995.6 MW")).toBeInTheDocument()
+  })
+
   it("requests the selected delivery dates", async () => {
     const fetchMock = installFetch()
     render(<App />)

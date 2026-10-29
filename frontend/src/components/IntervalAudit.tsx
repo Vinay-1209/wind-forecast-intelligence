@@ -28,7 +28,7 @@ export function IntervalAudit({
           </div>
         ) : null}
         {status === "error" ? (
-          <p className="status error" role="alert">
+          <p className="status error">
             {error}
             {detail ? " The figures below are from the previous interval." : null}
           </p>
