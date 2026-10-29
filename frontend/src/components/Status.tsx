@@ -1,8 +1,38 @@
+export function WindMark() {
+  return (
+    <svg className="wind-mark" viewBox="0 0 64 40" aria-hidden="true">
+      <path d="M4 30c8-2 12-9 20-9s12 7 22 6" />
+      <path d="M8 20c8-2 12-9 18-9s10 7 20 6" />
+      <path d="M2 10c8-2 12-7 18-7s8 5 14 4" />
+    </svg>
+  )
+}
+
 export function LoadingState() {
   return (
-    <p className="status" role="status">
-      Loading the January wind analysis…
-    </p>
+    <div className="loading-layout">
+      <div className="wind-loader" role="status">
+        <WindMark />
+        <p>Loading the January wind analysis…</p>
+      </div>
+      <div className="metric-grid" aria-hidden="true">
+        <div className="skeleton metric-skel" />
+        <div className="skeleton metric-skel" />
+        <div className="skeleton metric-skel" />
+      </div>
+      <div className="skeleton chart-skel" aria-hidden="true" />
+    </div>
+  )
+}
+
+export function ChartFallback() {
+  return (
+    <div className="chart-fallback" role="status" aria-busy="true">
+      <WindMark />
+      <p>Loading charts…</p>
+      <div className="skeleton chart-skel" aria-hidden="true" />
+      <div className="skeleton chart-skel short" aria-hidden="true" />
+    </div>
   )
 }
 

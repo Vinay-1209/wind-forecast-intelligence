@@ -1,5 +1,6 @@
 import type { ForecastDetails } from "../api/types.ts"
 import { formatDay, formatMw, formatSignedMw, formatWhen, reasonText } from "../format.ts"
+import { WindMark } from "./Status.tsx"
 
 export function IntervalAudit({
   detail,
@@ -10,17 +11,53 @@ export function IntervalAudit({
   status: "idle" | "loading" | "ready" | "error"
   error: string | null
 }) {
+  const waiting = status === "loading"
   return (
     <section className="panel" aria-labelledby="audit-heading">
       <div className="section-heading">
         <h2 id="audit-heading">Why this interval was scored</h2>
         <p>Each row is a WINDFOR publication for the selected delivery time. Only the latest one at or before the cutoff can enter the metrics.</p>
       </div>
-      {status === "loading" ? <p role="status">Loading this interval…</p> : null}
-      {status === "error" ? <p role="alert">{error}</p> : null}
-      {detail ? <AuditBody detail={detail} /> : null}
-      {status === "idle" && !detail ? <p>Select an interval from the chart or the largest misses.</p> : null}
+      <div className={waiting ? "audit-slot is-loading" : "audit-slot"} aria-busy={waiting}>
+        {waiting ? (
+          <div className="audit-overlay">
+            <div className="wind-loader" role="status">
+              <WindMark />
+              <p>Loading this interval…</p>
+            </div>
+          </div>
+        ) : null}
+        {status === "error" ? (
+          <p className="status error" role="alert">
+            {error}
+            {detail ? " The figures below are from the previous interval." : null}
+          </p>
+        ) : null}
+        {detail ? (
+          <div className={waiting ? "audit-stale" : undefined}>
+            <AuditBody detail={detail} />
+          </div>
+        ) : waiting ? (
+          <AuditSkeleton />
+        ) : (
+          <p>Select an interval from the chart or the largest misses.</p>
+        )}
+      </div>
     </section>
+  )
+}
+
+function AuditSkeleton() {
+  return (
+    <div className="audit-skeleton" aria-hidden="true">
+      <div className="skeleton sk-verdict" />
+      <div className="sk-grid">
+        {Array.from({ length: 8 }, (_, index) => (
+          <div key={index} className="skeleton sk-cell" />
+        ))}
+      </div>
+      <div className="skeleton sk-table" />
+    </div>
   )
 }
 

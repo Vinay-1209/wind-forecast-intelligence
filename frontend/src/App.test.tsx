@@ -122,6 +122,14 @@ describe("App", () => {
 })
 
 describe("excluded interval", () => {
+  it("keeps the previous interval on screen while the next one loads", async () => {
+    const { IntervalAudit } = await import("./components/IntervalAudit.tsx")
+    render(<IntervalAudit detail={details} status="loading" error={null} />)
+    expect(screen.getByRole("status")).toHaveTextContent("Loading this interval")
+    expect(screen.getAllByText("18,883 MW").length).toBeGreaterThan(0)
+    expect(document.querySelector(".audit-slot")).toHaveClass("is-loading")
+  })
+
   it("shows a missing forecast without turning it into zero", async () => {
     const { IntervalAudit } = await import("./components/IntervalAudit.tsx")
     render(<IntervalAudit detail={excludedDetails} status="ready" error={null} />)

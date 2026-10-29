@@ -5,7 +5,7 @@ import { DateFilter } from "./components/DateFilter.tsx"
 import { IntervalAudit } from "./components/IntervalAudit.tsx"
 import { MetricCards } from "./components/MetricCards.tsx"
 import { Methodology } from "./components/Methodology.tsx"
-import { EmptyState, ErrorState, LoadingState } from "./components/Status.tsx"
+import { ChartFallback, EmptyState, ErrorState, LoadingState, WindMark } from "./components/Status.tsx"
 import { formatDay } from "./format.ts"
 import { STUDY_FROM, STUDY_TO } from "./study.ts"
 
@@ -50,9 +50,12 @@ export default function App() {
   }
   if (detailFor !== selectedStart) {
     setDetailFor(selectedStart)
-    setDetail(null)
     setDetailError(null)
-    setDetailStatus(selectedStart ? "loading" : "idle")
+    if (selectedStart) setDetailStatus("loading")
+    else {
+      setDetail(null)
+      setDetailStatus("idle")
+    }
   }
 
   useEffect(() => {
@@ -98,7 +101,6 @@ export default function App() {
       })
       .catch((caught: unknown) => {
         if (cancelled) return
-        setDetail(null)
         setDetailStatus("error")
         setDetailError(messageFrom(caught))
       })
@@ -145,11 +147,6 @@ export default function App() {
             setTo(STUDY_TO)
           }}
         />
-        {status === "loading" && data ? (
-          <p className="updating" role="status">
-            Updating figures…
-          </p>
-        ) : null}
         {status === "loading" && !data ? <LoadingState /> : null}
         {status === "error" && !data ? (
           <ErrorState
@@ -164,6 +161,14 @@ export default function App() {
         ) : null}
         {data ? (
           <>
+            <div className="refresh-row">
+              {status === "loading" ? (
+                <p className="updating" role="status">
+                  <WindMark />
+                  <span>Updating figures…</span>
+                </p>
+              ) : null}
+            </div>
             <p className="period">
               Showing deliveries {formatDay(data.summary.delivery_from)} to{" "}
               {formatDay(data.summary.delivery_to)}.
@@ -173,7 +178,7 @@ export default function App() {
               <EmptyState />
             ) : (
               <>
-                <Suspense fallback={<p role="status">Loading charts…</p>}>
+                <Suspense fallback={<ChartFallback />}>
                   <GenerationChart points={data.series.points} onSelect={setSelectedStart} />
                   <ErrorPanel
                     points={data.series.points}
