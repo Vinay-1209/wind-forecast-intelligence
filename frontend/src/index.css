@@ -1,0 +1,308 @@
+:root {
+  color: #241c14;
+  background: #e7e1d6;
+  font-family: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  --ink: #241c14;
+  --muted: #5c5146;
+  --paper: #f7f3eb;
+  --line: #ddd3c4;
+  --teal: #0f6e68;
+  --teal-dark: #14352f;
+  --rust: #8d3b32;
+  --amber: #9a4e16;
+  --serif: "Iowan Old Style", Palatino, "Palatino Linotype", "Book Antiqua", Georgia, "Liberation Serif", serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+}
+
+button, input { font: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+.page {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 28px 20px 64px;
+}
+
+.masthead {
+  background: var(--teal-dark);
+  color: #f6f1e6;
+  padding: 32px 36px 28px;
+  border-radius: 6px 6px 0 0;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: #c9ddd6;
+}
+
+.masthead h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(2.1rem, 4vw, 3.2rem);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.lede {
+  max-width: 38rem;
+  margin: 14px 0 0;
+  color: #e4efe9;
+}
+
+.notice {
+  background: #e5f0ea;
+  color: #14352f;
+  padding: 14px 36px;
+  border-left: 4px solid var(--teal);
+  border-right: 1px solid #c9ddd4;
+  border-bottom: 1px solid #c9ddd4;
+}
+
+.notice strong { font-weight: 650; }
+
+main {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-top: 0;
+  padding: 22px 28px 36px;
+  border-radius: 0 0 6px 6px;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 20px;
+  align-items: end;
+  margin-bottom: 8px;
+}
+
+.filter-field { display: flex; flex-direction: column; gap: 6px; }
+
+.filter-field label,
+.section-heading p,
+.coverage,
+.chart-note,
+.filter-hint,
+.snapshot,
+.method p,
+.lede {
+  color: var(--muted);
+}
+
+.filter-field label { font-size: 0.85rem; }
+
+input[type="date"] {
+  background: white;
+  border: 1px solid #cfc4b3;
+  border-radius: 4px;
+  padding: 8px 10px;
+  color: var(--ink);
+}
+
+.filter-actions { display: flex; gap: 8px; }
+
+.button {
+  border: 1px solid #cfc4b3;
+  background: white;
+  color: var(--ink);
+  border-radius: 4px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.button.primary {
+  background: var(--teal-dark);
+  color: #f6f1e6;
+  border-color: var(--teal-dark);
+}
+
+.button:disabled { cursor: not-allowed; opacity: 0.55; }
+
+.filter-error { color: var(--rust); margin: 0; flex-basis: 100%; }
+.filter-hint { margin: 0; flex-basis: 100%; }
+
+.period { margin: 18px 0 0; font-size: 0.95rem; }
+
+.section-heading h2,
+.metric h3,
+.status h2 {
+  font-family: var(--serif);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.section-heading h2 { margin: 0 0 4px; font-size: 1.55rem; }
+.section-heading p { margin: 0; }
+
+.metrics { margin-top: 22px; }
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.metric {
+  background: white;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--teal);
+  padding: 14px 16px 16px;
+}
+
+.metric:nth-child(2) { border-top-color: #1d4e89; }
+.metric:nth-child(3) { border-top-color: var(--rust); }
+
+.metric h3 { margin: 0; font-size: 1.05rem; }
+.metric-value {
+  margin: 8px 0;
+  font-family: var(--serif);
+  font-size: 1.8rem;
+  letter-spacing: -0.03em;
+}
+.metric p:last-child { margin: 0; color: var(--muted); font-size: 0.92rem; }
+
+.coverage { margin: 14px 0 0; }
+
+.panel {
+  margin-top: 28px;
+  padding-top: 8px;
+}
+
+.toggle {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  margin: 12px 0;
+}
+
+.chart-frame { width: 100%; min-height: 200px; }
+.chart-note { margin: 8px 0 0; font-size: 0.9rem; }
+
+.split {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr;
+  gap: 22px;
+  align-items: start;
+}
+
+.miss-list { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+
+.miss {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px 12px;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.miss.is-selected,
+tr.is-selected { background: #e7f2ef; }
+
+.miss strong { font-variant-numeric: tabular-nums; color: var(--rust); }
+
+.tooltip {
+  background: #14241f;
+  color: #f6f1e6;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.tooltip p { margin: 0; }
+
+.verdict {
+  padding: 10px 12px;
+  border-radius: 4px;
+  margin: 14px 0;
+}
+
+.verdict.included { background: #e7f2ef; }
+.verdict.excluded { background: #f8ebe3; }
+
+.audit-grid,
+.formula-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px 16px;
+  margin: 0;
+}
+
+.formula-list { grid-template-columns: 1fr 1fr; margin: 14px 0; }
+
+.audit-grid div,
+.formula-list div {
+  background: white;
+  border: 1px solid var(--line);
+  padding: 10px 12px;
+}
+
+.audit-grid dt,
+.formula-list dt {
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.audit-grid dd,
+.formula-list dd { margin: 4px 0 0; }
+
+.table-wrap { overflow-x: auto; margin-top: 16px; max-height: 320px; }
+
+table { width: 100%; border-collapse: collapse; background: white; }
+
+caption {
+  text-align: left;
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+th, td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  font-variant-numeric: tabular-nums;
+}
+
+th { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+
+.status { margin-top: 22px; }
+.status.error { color: var(--rust); }
+.status.empty h2 { margin-bottom: 6px; }
+.updating { color: var(--teal-dark); }
+
+.notes { padding-left: 18px; }
+.notes li + li { margin-top: 6px; }
+.snapshot { font-size: 0.9rem; }
+
+@media (max-width: 860px) {
+  .metric-grid,
+  .split,
+  .audit-grid,
+  .formula-list { grid-template-columns: 1fr; }
+  .masthead, .notice, main { padding-left: 18px; padding-right: 18px; }
+  .miss { flex-direction: column; }
+}
