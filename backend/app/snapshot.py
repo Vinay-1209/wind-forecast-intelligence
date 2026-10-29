@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import gzip
 import json
 import logging
 
@@ -10,8 +11,15 @@ from app.normalize import normalise_actuals, normalise_forecasts
 logger = logging.getLogger(__name__)
 
 
+def _read_payload(path) -> dict:
+    raw = path.read_bytes()
+    if path.suffix == ".gz" or raw.startswith(b"\x1f\x8b"):
+        raw = gzip.decompress(raw)
+    return json.loads(raw)
+
+
 def load_service(settings: Settings) -> AnalysisService:
-    payload = json.loads(settings.snapshot_path.read_text(encoding="utf-8"))
+    payload = _read_payload(settings.snapshot_path)
     actuals, actual_rejected = normalise_actuals(payload["actuals"])
     forecasts, forecast_rejected = normalise_forecasts(payload["forecasts"])
     return AnalysisService(

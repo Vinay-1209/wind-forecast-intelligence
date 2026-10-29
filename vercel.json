@@ -10,7 +10,7 @@
       "root": "backend",
       "framework": "fastapi",
       "entrypoint": "app.main:app",
-      "buildCommand": "mkdir -p data && cp ../data/snapshot.json data/snapshot.json"
+      "buildCommand": "mkdir -p data && if [ -f ../data/snapshot.json ]; then cp ../data/snapshot.json data/snapshot.json; elif [ -f ../data/snapshot.json.gz ]; then cp ../data/snapshot.json.gz data/snapshot.json.gz; fi"
     }
   },
   "rewrites": [

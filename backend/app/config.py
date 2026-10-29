@@ -52,13 +52,16 @@ def default_snapshot_path() -> Path:
     override = os.environ.get("SNAPSHOT_PATH")
     if override:
         return Path(override)
-    primary = REPO_ROOT / "data" / "snapshot.json"
-    bundled = Path(__file__).resolve().parents[1] / "data" / "snapshot.json"
-    if primary.exists():
-        return primary
-    if bundled.exists():
-        return bundled
-    return primary
+    candidates = [
+        REPO_ROOT / "data" / "snapshot.json",
+        Path(__file__).resolve().parents[1] / "data" / "snapshot.json",
+        REPO_ROOT / "data" / "snapshot.json.gz",
+        Path(__file__).resolve().parents[1] / "data" / "snapshot.json.gz",
+    ]
+    for path in candidates:
+        if path.exists():
+            return path
+    return candidates[0]
 
 
 def load_settings() -> Settings:
