@@ -48,6 +48,19 @@ def parse_cutoff(value: str) -> tuple[int, int]:
     return hour, minute
 
 
+def default_snapshot_path() -> Path:
+    override = os.environ.get("SNAPSHOT_PATH")
+    if override:
+        return Path(override)
+    primary = REPO_ROOT / "data" / "snapshot.json"
+    bundled = Path(__file__).resolve().parents[1] / "data" / "snapshot.json"
+    if primary.exists():
+        return primary
+    if bundled.exists():
+        return bundled
+    return primary
+
+
 def load_settings() -> Settings:
     hour, minute = parse_cutoff(os.environ.get("CUTOFF_TIME", "09:50"))
     origins = tuple(
@@ -59,7 +72,7 @@ def load_settings() -> Settings:
         timezone=ZoneInfo(os.environ.get("TIMEZONE", "Europe/London")),
         cutoff_hour=hour,
         cutoff_minute=minute,
-        snapshot_path=Path(os.environ.get("SNAPSHOT_PATH", str(REPO_ROOT / "data" / "snapshot.json"))),
+        snapshot_path=default_snapshot_path(),
         cors_origins=origins,
         elexon_base_url=os.environ.get(
             "ELEXON_BASE_URL", "https://data.elexon.co.uk/bmrs/api/v1"

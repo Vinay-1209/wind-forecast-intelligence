@@ -23,6 +23,7 @@ pnpm-debug.log*
 !.env.example
 
 # Editors and OS
+.vercel/
 .cursor/
 .vscode/
 .idea/
@@ -32,6 +33,9 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Snapshot copied into the API bundle at deploy time
+backend/data/
 
 # Assignment / private brief materials (do not publish)
 *.docx
