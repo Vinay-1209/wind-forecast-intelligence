@@ -106,13 +106,11 @@ cd frontend && npm test
 
 ## Deployment
 
-Docker Compose and a verified public deployment are not in this repository yet. Do not treat a placeholder URL as live.
+Live site: [https://wind-forecast-intelligence-theta.vercel.app](https://wind-forecast-intelligence-theta.vercel.app)
 
-When deployed, the intended shape is:
+The Vercel project is on the Hobby plan. The dashboard and the FastAPI service are one project (`vercel.json`): the site is static, `/api` is rewritten to the Python service, and the API reads the committed snapshot. It does not call Elexon on each page load. `VITE_API_URL` is empty in production so the browser uses the same origin.
 
-- Static frontend on a host such as Vercel
-- FastAPI reading `data/snapshot.json` (no live Elexon dependency for the dashboard)
-- `VITE_API_URL` pointing at the API origin, or same-origin rewrites
+Docker Compose is not in this repository yet.
 
 ## Business rules (short)
 
